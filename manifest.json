@@ -1,0 +1,17 @@
+{
+  "name": "Ardit's Game",
+  "short_name": "Ardit's Game",
+  "start_url": "/ardits-game/",
+  "scope": "/ardits-game/",
+  "display": "fullscreen",
+  "background_color": "#09110c",
+  "theme_color": "#09110c",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
