@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Ardit's Game // Forest Survival</title>
+  <link rel="manifest" href="manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { user-select: none; -webkit-user-select: none; touch-action: none; }
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #09110c; font-family: monospace; color: #fff; }
+    #game-canvas { width: 100vw; height: 100vh; display: block; image-rendering: pixelated; }
+  </style>
+</head>
+<body>
+
+  <canvas id="game-canvas"></canvas>
+
+  <!-- TOP HUD: HEALTH / HUNGER / THIRST / DAY -->
+  <div class="fixed top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-10">
+    <div class="bg-black/75 border border-white/15 rounded-lg p-2.5 w-44 space-y-1.5 backdrop-blur-sm">
+      <div class="text-[10px] flex justify-between"><span>HP</span><span id="val-hp">100</span></div>
+      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-hp" class="h-full bg-red-500 w-full transition-all"></div></div>
+      <div class="text-[10px] flex justify-between"><span>FOOD</span><span id="val-hunger">100</span></div>
+      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-hunger" class="h-full bg-amber-400 w-full transition-all"></div></div>
+      <div class="text-[10px] flex justify-between"><span>WATER</span><span id="val-thirst">100</span></div>
+      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-thirst" class="h-full bg-sky-400 w-full transition-all"></div></div>
+    </div>
+
+    <div class="bg-black/75 border border-white/15 rounded-lg px-3 py-2 text-right pointer-events-auto">
+      <div id="txt-day" class="text-xs font-bold text-emerald-300">DAY 1 // SUN</div>
+      <div class="text-[10px] text-zinc-400">ARDIT'S GAME</div>
+    </div>
+  </div>
+
+  <!-- FLOATING MESSAGE TOAST -->
+  <div id="txt-toast" class="fixed top-24 left-1/2 -translate-x-1/2 bg-black/85 border border-white/20 px-3 py-1.5 rounded text-xs text-emerald-300 opacity-0 transition-opacity pointer-events-none z-20 whitespace-nowrap"></div>
+
+  <!-- LEFT THUMB: VIRTUAL JOYSTICK -->
+  <div id="joy-zone" class="fixed bottom-24 left-5 w-32 h-32 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center z-10">
+    <div id="joy-knob" class="w-12 h-12 rounded-full bg-white/80 shadow-lg pointer-events-none"></div>
+  </div>
+
+  <!-- RIGHT THUMB: ACTION BUTTONS -->
+  <div class="fixed bottom-24 right-5 flex flex-col items-end gap-2.5 z-10">
+    <div class="flex gap-2.5">
+      <button id="btn-bag" class="w-16 h-14 rounded-xl bg-zinc-900/90 border border-white/25 text-[11px] font-bold active:scale-95">BAG /<br>CRAFT</button>
+      <button id="btn-use" class="w-16 h-14 rounded-xl bg-emerald-600/90 border border-emerald-300/40 text-[11px] font-bold active:scale-95">USE /<br>LOOT</button>
+    </div>
+    <button id="btn-act" class="w-36 h-14 rounded-xl bg-amber-600/95 border border-amber-300/40 text-xs font-bold tracking-wider active:scale-95">CHOP / HIT</button>
+  </div>
+
+  <!-- BOTTOM HOTBAR -->
+  <div id="hotbar" class="fixed bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/85 border border-white/20 p-1.5 rounded-xl z-10 max-w-[96vw] overflow-x-auto"></div>
+
+  <!-- BAG & CRAFTING MODAL -->
+  <div id="bag-modal" class="hidden fixed inset-0 bg-black/85 z-30 p-4 flex flex-col justify-center items-center">
+    <div class="w-full max-w-md bg-[#111914] border border-white/20 rounded-xl p-4 space-y-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-white/10 pb-2">
+        <h2 class="text-sm font-bold text-emerald-300">CRAFTING &amp; BAG</h2>
+        <button id="btn-close-bag" class="px-3 py-1 rounded bg-white/10 text-xs">CLOSE</button>
+      </div>
+      <div>
+        <p class="text-[11px] text-zinc-400 mb-2">CRAFT ITEMS (TAP TO CRAFT):</p>
+        <div id="craft-list" class="grid grid-cols-1 gap-2"></div>
+      </div>
+      <div class="border-t border-white/10 pt-3">
+        <p class="text-[11px] text-zinc-400 mb-2">YOUR BACKPACK (TAP TO EQUIP):</p>
+        <div id="inv-list" class="grid grid-cols-2 gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  </script>
+</body>
+</html>
