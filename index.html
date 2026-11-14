@@ -9,64 +9,65 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { user-select: none; -webkit-user-select: none; touch-action: none; }
-    html, body { margin: 0; padding: 0; overflow: hidden; background: #09110c; font-family: monospace; color: #fff; }
-    #game-canvas { width: 100vw; height: 100vh; display: block; image-rendering: pixelated; }
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #0c1710; font-family: monospace; color: #fff; }
+    #game-canvas { width: 100vw; height: 100vh; display: block; }
+    .pix { image-rendering: pixelated; image-rendering: crisp-edges; }
   </style>
 </head>
 <body>
 
   <canvas id="game-canvas"></canvas>
 
-  <!-- TOP HUD: HEALTH / HUNGER / THIRST / DAY -->
+  <!-- TOP HUD -->
   <div class="fixed top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-10">
-    <div class="bg-black/75 border border-white/15 rounded-lg p-2.5 w-44 space-y-1.5 backdrop-blur-sm">
+    <div class="bg-black/80 border-2 border-zinc-600 rounded-lg p-2.5 w-44 space-y-1.5">
       <div class="text-[10px] flex justify-between"><span>HP</span><span id="val-hp">100</span></div>
-      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-hp" class="h-full bg-red-500 w-full transition-all"></div></div>
+      <div class="h-2 bg-zinc-800 border border-black"><div id="bar-hp" class="h-full bg-red-500 w-full"></div></div>
       <div class="text-[10px] flex justify-between"><span>FOOD</span><span id="val-hunger">100</span></div>
-      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-hunger" class="h-full bg-amber-400 w-full transition-all"></div></div>
+      <div class="h-2 bg-zinc-800 border border-black"><div id="bar-hunger" class="h-full bg-amber-400 w-full"></div></div>
       <div class="text-[10px] flex justify-between"><span>WATER</span><span id="val-thirst">100</span></div>
-      <div class="h-1.5 bg-zinc-800 rounded overflow-hidden"><div id="bar-thirst" class="h-full bg-sky-400 w-full transition-all"></div></div>
+      <div class="h-2 bg-zinc-800 border border-black"><div id="bar-thirst" class="h-full bg-sky-400 w-full"></div></div>
     </div>
 
-    <div class="bg-black/75 border border-white/15 rounded-lg px-3 py-2 text-right pointer-events-auto">
-      <div id="txt-day" class="text-xs font-bold text-emerald-300">DAY 1 // SUN</div>
-      <div class="text-[10px] text-zinc-400">ARDIT'S GAME</div>
+    <div class="bg-black/80 border-2 border-zinc-600 rounded-lg px-3 py-2 text-right">
+      <div id="txt-day" class="text-xs font-bold text-emerald-300">DAY 1 // DAY</div>
+      <div class="text-[10px] text-zinc-400">ARDIT'S GAME v2</div>
     </div>
   </div>
 
-  <!-- FLOATING MESSAGE TOAST -->
-  <div id="txt-toast" class="fixed top-24 left-1/2 -translate-x-1/2 bg-black/85 border border-white/20 px-3 py-1.5 rounded text-xs text-emerald-300 opacity-0 transition-opacity pointer-events-none z-20 whitespace-nowrap"></div>
+  <!-- FLOATING TOAST -->
+  <div id="txt-toast" class="fixed top-24 left-1/2 -translate-x-1/2 bg-black/90 border-2 border-emerald-400/60 px-3 py-1.5 rounded text-xs text-emerald-300 opacity-0 transition-opacity pointer-events-none z-20 whitespace-nowrap"></div>
 
-  <!-- LEFT THUMB: VIRTUAL JOYSTICK -->
-  <div id="joy-zone" class="fixed bottom-24 left-5 w-32 h-32 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center z-10">
-    <div id="joy-knob" class="w-12 h-12 rounded-full bg-white/80 shadow-lg pointer-events-none"></div>
+  <!-- LEFT THUMB: JOYSTICK -->
+  <div id="joy-zone" class="fixed bottom-24 left-5 w-32 h-32 rounded-full bg-black/40 border-2 border-white/30 flex items-center justify-center z-10">
+    <div id="joy-knob" class="w-12 h-12 rounded-full bg-white/85 border-2 border-black shadow-lg pointer-events-none"></div>
   </div>
 
   <!-- RIGHT THUMB: ACTION BUTTONS -->
   <div class="fixed bottom-24 right-5 flex flex-col items-end gap-2.5 z-10">
     <div class="flex gap-2.5">
-      <button id="btn-bag" class="w-16 h-14 rounded-xl bg-zinc-900/90 border border-white/25 text-[11px] font-bold active:scale-95">BAG /<br>CRAFT</button>
-      <button id="btn-use" class="w-16 h-14 rounded-xl bg-emerald-600/90 border border-emerald-300/40 text-[11px] font-bold active:scale-95">USE /<br>LOOT</button>
+      <button id="btn-bag" class="w-16 h-14 rounded-xl bg-zinc-900/95 border-2 border-zinc-400 text-[11px] font-bold active:scale-95">BAG /<br>CRAFT</button>
+      <button id="btn-use" class="w-16 h-14 rounded-xl bg-emerald-700/95 border-2 border-emerald-300 text-[11px] font-bold active:scale-95">USE /<br>LOOT</button>
     </div>
-    <button id="btn-act" class="w-36 h-14 rounded-xl bg-amber-600/95 border border-amber-300/40 text-xs font-bold tracking-wider active:scale-95">CHOP / HIT</button>
+    <button id="btn-act" class="w-36 h-14 rounded-xl bg-amber-700/95 border-2 border-amber-300 text-xs font-bold tracking-wider active:scale-95">CHOP / HIT</button>
   </div>
 
   <!-- BOTTOM HOTBAR -->
-  <div id="hotbar" class="fixed bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/85 border border-white/20 p-1.5 rounded-xl z-10 max-w-[96vw] overflow-x-auto"></div>
+  <div id="hotbar" class="fixed bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/85 border-2 border-zinc-600 p-1.5 rounded-xl z-10 max-w-[96vw] overflow-x-auto"></div>
 
   <!-- BAG & CRAFTING MODAL -->
   <div id="bag-modal" class="hidden fixed inset-0 bg-black/85 z-30 p-4 flex flex-col justify-center items-center">
-    <div class="w-full max-w-md bg-[#111914] border border-white/20 rounded-xl p-4 space-y-4 max-h-[85vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b border-white/10 pb-2">
-        <h2 class="text-sm font-bold text-emerald-300">CRAFTING &amp; BAG</h2>
-        <button id="btn-close-bag" class="px-3 py-1 rounded bg-white/10 text-xs">CLOSE</button>
+    <div class="w-full max-w-md bg-[#131b15] border-2 border-zinc-500 rounded-xl p-4 space-y-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-white/15 pb-2">
+        <h2 class="text-sm font-bold text-emerald-300">CRAFTING &amp; BACKPACK</h2>
+        <button id="btn-close-bag" class="px-3 py-1 rounded bg-white/15 text-xs font-bold">CLOSE</button>
       </div>
       <div>
-        <p class="text-[11px] text-zinc-400 mb-2">CRAFT ITEMS (TAP TO CRAFT):</p>
+        <p class="text-[11px] text-zinc-400 mb-2">CRAFT ITEMS:</p>
         <div id="craft-list" class="grid grid-cols-1 gap-2"></div>
       </div>
-      <div class="border-t border-white/10 pt-3">
-        <p class="text-[11px] text-zinc-400 mb-2">YOUR BACKPACK (TAP TO EQUIP):</p>
+      <div class="border-t border-white/15 pt-3">
+        <p class="text-[11px] text-zinc-400 mb-2">BACKPACK (TAP TO HOLD):</p>
         <div id="inv-list" class="grid grid-cols-2 gap-2"></div>
       </div>
     </div>
